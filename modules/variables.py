@@ -20,12 +20,17 @@ RankImgLink = {
 } # ranking image links for embed
 
 # Channels to send on and Roles to ping by the bot //below
-Gifts = {
+Gifts1 = {
     "channel" : 1015428489027002448, # daily-gifts-multus
-    "role" : 1015422652464242799 #daily-gifts-role-multus
+    "role" : 1015422652464242799 #daily-gifts-role
+}
+Gifts = {
+    "channel" : 851083117087162409, # daily-gifts-test
+    "role" : 867911659707047977 #daily-gifts-role-test
 }
 
-NewsChannel = 904168698766573598 #multus-news-channel
+NewsChannel = 995180817028501524    #tests-news-channel
+NewsChannel1 = 904168698766573598 #multus-news-channel
 
 # Permission for some command for @isNeiruXP decorators
 PermIDS = [666483486735073312,618790940290842625]
