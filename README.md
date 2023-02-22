@@ -5,6 +5,8 @@
 
 Make sure you have `python` installed in your system. [Click here to download](https://www.python.org/downloads/)
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/R0mThz?referralCode=Qa9Rys)
+
 **Follow the instructions to deploy and get it running:**
 
 
