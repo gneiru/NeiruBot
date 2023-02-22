@@ -5,8 +5,6 @@
 
 Make sure you have `python` installed in your system. [Click here to download](https://www.python.org/downloads/)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/R0mThz?referralCode=Qa9Rys)
-
 **Follow the instructions to deploy and get it running:**
 
 
@@ -30,3 +28,9 @@ Make sure you have `python` installed in your system. [Click here to download](h
     - Change variables such as channel IDs in `modules/variables.py` 
 
 - `python main.py`
+
+## Deploying to [railway.app](https://railway.app/dashboard)
+
+Note that this won't change default variables that are Multus Based
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/R0mThz?referralCode=Qa9Rys)
