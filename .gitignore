@@ -1,0 +1,4 @@
+.env
+env
+TwitterCredentials.txt
+__pycache__
