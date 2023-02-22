@@ -3,6 +3,7 @@ import disnake
 from modules.twitter import Tweet
 from modules.database import twtDB as db
 import modules.variables as vaR
+import requests
 
 class Task(commands.Cog):
 
@@ -19,6 +20,12 @@ class Task(commands.Cog):
         channel = self.bot.get_channel(vaR.NewsChannel)
                 
         try:
+            response = requests.get('https://game.aq.com/game/api/data/servers')
+            server_list = response.json()
+            total_players = [server["iCount"] for server in server_list]
+            activity = disnake.Activity(name=f"AQW with {sum(total_players)} players", type=disnake.ActivityType.playing)
+            await self.bot.change_presence(status=disnake.Status.idle, activity = activity)
+            
             async for msg in channel.history(limit=3):
                 if "Alina_AE/status/" in msg.content or "YoshinoAE/status/" in msg.content:
                     m = msg.content.split("/status/")

@@ -1,4 +1,5 @@
 .env
 env
+test.py
 TwitterCredentials.txt
 __pycache__
