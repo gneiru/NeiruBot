@@ -23,7 +23,8 @@ Make sure you have `python` installed in your system. [Click here to download](h
         - **LOGS_CHANNEL** - A channel ID for logging commands, you can ignore this unless you uncomment all commented lines in `cogs/on_error.py`
         - **MONGO_URI** - Database [connection string](https://www.mongodb.com/docs/guides/atlas/connection-string/) from mongodb to store Datas
         - **PREFIX** - Set a prefix, non-slash prefix, make sure no one use this as this is not recommended to use, not fully tested
-    - Rename **TwitterCredential.txt** into **TwitterCredentials.txt** then change twitter related variables. [Be guided here](https://www.joomshaper.com/documentation/joomla-extensions/sp-tweet/1-goto-https-dev-twitter-com-and-sign-in-with-your-twitter-account).
+        - Remaining variables are Twitter Developer Credentials, [click here for guide](https://www.joomshaper.com/documentation/joomla-extensions/sp-tweet/1-goto-https-dev-twitter-com-and-sign-in-with-your-twitter-account).
+
     - Change variables such as channel IDs in `modules/variables.py` 
 
 - `python main.py`

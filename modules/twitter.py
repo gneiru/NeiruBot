@@ -5,6 +5,7 @@ from TwitterAPI import HydrateType
 import datetime
 import pytz
 import json
+from modules import dotenv
 
 class Tweet:
     
@@ -15,7 +16,15 @@ class Tweet:
         self.imgURL = None
         self.timestamp = None
         self.author = None
-        self.o = TApi.TwitterOAuth.read_file('TwitterCredentials.txt')
+        TApi.TwitterOAuth.consumer_key = dotenv.consumer_key
+        TApi.TwitterOAuth.consumer_secret = dotenv.consumer_secret
+        TApi.TwitterOAuth.access_token_key = dotenv.access_token_key
+        TApi.TwitterOAuth.access_token_secret = dotenv.access_token_secret
+        self.o = TApi.TwitterOAuth
+        # print(self.o.consumer_key)
+        # print(self.o.consumer_secret)
+        # print(self.o.access_token_key)
+        # print(self.o.access_token_secret)
         self.api = TApi.TwitterAPI(self.o.consumer_key, self.o.consumer_secret, self.o.access_token_key, self.o.access_token_secret, api_version='2')
 
     def get_discord_timestamp(self, hours: int) -> int:
