@@ -43,9 +43,9 @@ class Tweet:
             
 
             monster = re.search(monster_regex, tweet_text ).group(1)
-            if map_regex:
+            try:
                 map = re.search(map_regex, tweet_text ).group(1)
-            else:
+            except Exception as e:
                 map = "somewhere? map(word not specified)"
             items = re.search(items_regex, tweet_text ).group(1)
             
