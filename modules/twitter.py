@@ -38,12 +38,15 @@ class Tweet:
         tweet_text = self.text.lower()
         if monster:
             monster_regex = re.compile(r"battle (?:the )?(.*?) in")
-            map_regex = re.compile(r"in the /(.*?) map")
+            map_regex = re.compile(r"in (?:the ) /(.*?) map")
             items_regex = re.compile(r"to (?:get|unlock) (.*?)(?: until|\.|!)")
             
 
             monster = re.search(monster_regex, tweet_text ).group(1)
-            map = re.search(map_regex, tweet_text ).group(1)
+            if map_regex:
+                map = re.search(map_regex, tweet_text ).group(1)
+            else:
+                map = "somewhere? map(word not specified)"
             items = re.search(items_regex, tweet_text ).group(1)
             
             if "until" in tweet_text:
