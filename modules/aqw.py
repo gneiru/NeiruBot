@@ -7,6 +7,7 @@ import json
 import pytz
 class events:
     def __init__(self):
+        self.timezone = "US/Eastern"
         self.eventList = None
         self.content = None
         self.timestamp = None
@@ -15,7 +16,7 @@ class events:
         self.imgURL = "https://artix.com/media/1077/ae_mainbanner.jpg"
         
     def get_discord_timestamp(self, hours: int) -> int:
-        tz = pytz.timezone("UTC")
+        tz = pytz.timezone(self.timezone)
         now = datetime.now(tz)
         now = datetime.now().timestamp()
         hours_in_seconds = hours * 60 * 60

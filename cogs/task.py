@@ -19,7 +19,6 @@ class Task(commands.Cog):
     @tasks.loop(seconds=15)  # task runs every 15 seconds
     async def tweet_task(self):
         
-        channel = self.bot.get_channel(vaR.NewsChannel)
                 
         try:
             response = requests.get('https://game.aq.com/game/api/data/servers')
@@ -53,12 +52,12 @@ class Task(commands.Cog):
             #                 await receiverChannel.send(content = f"||<@&{vaR.Gifts['role']}>||" , embed = embed)
             
             # Set timezone to UTC
-            tz = pytz.timezone('UTC')
+            tz = pytz.timezone('US/Eastern')
             now = datetime.now(tz)
             
             
             # if now.hour != 5 and now.minute != 0 or now.minute != 1: # 5th hour is server daily reset
-            if now.hour == 5 and (now.minute == 0 or now.minute == 1):
+            if now.hour == 0 and (now.minute == 0 or now.minute == 1):
                 ev = events()
                 urls = await ev.get_urls()
                 for url in urls:
@@ -78,7 +77,7 @@ class Task(commands.Cog):
                     else:
                         print("This embed already sent")
             # else:
-            #     return print(f"Current hour: {now.hour} \nNot yet 1:00 to 1:01pm")
+            #     return print(f"Current hour: {now.hour} \nNot yet midnight")
         except Exception as e:
             print(e)
         
