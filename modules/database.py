@@ -4,5 +4,5 @@ import pymongo
 client = pymongo.MongoClient(dotenv.mongo_uri)
 
 database = client.coin
-twtDB = client.aqw
+aqwDB = client.aqw
 

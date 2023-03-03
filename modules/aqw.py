@@ -2,13 +2,51 @@ from bs4 import BeautifulSoup as bts
 import requests
 import re
 import asyncio
-import datetime
+from datetime import datetime
 import json
+import pytz
 class events:
-    def __init__(self, eventList: list= None):
-        self.eventList = eventList
+    def __init__(self):
+        self.eventList = None
+        self.content = None
+        self.timestamp = None
+        self.what = None
+        self.boostHours = 48
+        self.imgURL = "https://artix.com/media/1077/ae_mainbanner.jpg"
         
-    async def get_scripts(self):
+    def get_discord_timestamp(self, hours: int) -> int:
+        tz = pytz.timezone("UTC")
+        now = datetime.now(tz)
+        now = datetime.now().timestamp()
+        hours_in_seconds = hours * 60 * 60
+        self.timestamp = int((now + hours_in_seconds))
+        
+    def regex(self, monster: bool = False, boost: bool = False):
+        text = self.content.lower()
+        if monster:
+            monster_regex = re.compile(r"battle (?:the )?(.*?) in")
+            map_regex = re.compile(r"in (?:the ) /(.*?) map")
+            items_regex = re.compile(r"to (?:get|unlock) (.*?)(?: until|\.|!)")
+            
+            monster = re.search(monster_regex, text ).group(1) if re.search(monster_regex, text) is not None else ""
+            map = re.search(map_regex, text ).group(1) if re.search(map_regex, text) is not None else ""
+            items = re.search(items_regex, text ).group(1) if re.search(items_regex, text) is not None else ""
+            
+            if "until" in text:
+                until_date_regex = re.compile(r"until (.*?)(?: to|\.|!)")
+                until_date_match = re.search(until_date_regex, text).group(1)
+                return f'**Monster:** {monster.title()}\n**Map:** /join {map}\n**Item(s):** {self.what}\n**Until: ** {until_date_match.capitalize()}'
+                
+            return f'**Monster:** {monster.title()}\n**Map:** /join {map}\n**Item(s):** {self.what}'
+        
+        if boost:
+            
+            matches = re.findall(r'(\d+)', self.content)
+            self.boostHours = int(next((match for match in matches if int(match) in [24, 48, 72, 96]), 48))
+            self.get_discord_timestamp(self.boostHours)
+            return f'**Boost:** {self.what} \n**Duration:** {self.boostHours} Hours\n**End: **<t:{self.timestamp}:R>'
+        
+    async def get_urls(self):
         URL = "https://artix.com/calendar"
         response = requests.get(URL)
         # print(response.text)
@@ -18,30 +56,58 @@ class events:
         script_content = script.text
         events_pattern = r"events: \[(.*)\]"
         events_match = re.search(events_pattern, script_content, re.DOTALL)
-        if events_match:
-            events_string = events_match.group(1)
-            events_string = events_string.replace("' + '", '')
-            events_string = events_string.replace("title", '"title"')
-            events_string = events_string.replace("url", '"url"')
-            events_string = events_string.replace("start", '"start"')
-            events_string = events_string.replace("end", '"end"')
-            events_string = events_string.replace("'", '"')
-            events_string = events_string.replace('cal"end"ar', 'calendar')
-            # further processing of events_string can be done here
-            print(events_string)
-            s = eval(f"[{events_string}]")
-            print(json.loads(s))
-        # script = soup.find('script', text=lambda t: 'events:' in t)
-        # if script:
-        #     start = script.text.index("events: [") + len("events: [")
-        #     end = script.text.rindex("}]});")
-        #     events_string = script.text[start:end]
-        #     events = eval(events_string)
-        #     print(events)
-        # print(soup)
-        # else:
-        #     print("No events found.")
+        date_events = (events_match.group(1).replace("' + '", ''))
+        # regular expression pattern to match the URL and start date
+        pattern = r"url:\s*'([^']*)',\s*start:\s*'(\d{4}-\d{2}-\d{2})'"
+
+        # get the current date in the format "Y-m-d"
+        current_date = datetime.today().strftime('%Y-%m-%d')
+        # current_date = '2023-02-28'
+
+        # loop over all matches and extract URLs with the current date
+        matches = re.findall(pattern, date_events)
+        urls = [match[0] for match in matches if match[1] == current_date]
+
+        # print the matching URLs
+        return urls
     
+    async def process_url(self, url):
+        response = requests.get(url)
+        soup = bts(response.text, "html.parser")
+        div = soup.select_one('div.newsPost')
+        self.what = div.select_one('h1').text
+        self.content = div.text
+        img = div.select_one('img')
+        if img:
+            self.imgURL = f"https://artix.com{img['src']}"
+        lowercase_content = self.content.lower()
+        if "log in each day for a new" in lowercase_content:
+            if "battle" in lowercase_content and ("get" in lowercase_content or "collect" in lowercase_content):
+                data = self.regex(monster = True)
+                return {
+                    'title': "New Daily Gift",
+                    "url": url,
+                    "description": data,
+                    "image_url": self.imgURL
+                }
+            elif 'Double' in self.what or 'Triple' in self.what or 'boost' in self.what.lower():
+                data = self.regex(boost = True)
+                return {
+                    'title': "New Daily Boost",
+                    "url": url,
+                    "description": data,
+                    "image_url": self.imgURL
+                }
+            # print(
+            #     {
+            #         "url": f"https://twitter.com/{self.author['username']}/status/{self.id}",
+            #         "tweetID": self.id,
+            #         "description": data,
+            #         "author": self.author['name'],
+            #         "author_icon_url": self.author['profile_image_url']
+            #     }
+            # )
+            
 class account:
     def __init__(self, name= None, user_id=None, discord_id=None):
         self.name = name # required
@@ -108,7 +174,10 @@ class account:
 
 async def doStuffs():
     c = events()
-    await c.get_scripts()
+    urls = await c.get_urls()
+    for url in urls:
+        processed = await c.process_url(url)
+        print(processed)
 
 if __name__ == "__main__":
     asyncio.run(doStuffs())
