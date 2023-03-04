@@ -7,7 +7,7 @@ import json
 import pytz
 class events:
     def __init__(self):
-        self.timezone = "US/Eastern"
+        self.timezone = pytz.timezone('US/Eastern')
         self.eventList = None
         self.content = None
         self.timestamp = None
@@ -16,9 +16,8 @@ class events:
         self.imgURL = "https://artix.com/media/1077/ae_mainbanner.jpg"
         
     def get_discord_timestamp(self, hours: int) -> int:
-        tz = pytz.timezone(self.timezone)
-        now = datetime.now(tz)
-        now = datetime.now().timestamp()
+        now = datetime.now(self.timezone)
+        now = datetime.now(self.timezone).timestamp()
         hours_in_seconds = hours * 60 * 60
         self.timestamp = int((now + hours_in_seconds))
         
@@ -26,12 +25,10 @@ class events:
         text = self.content.lower()
         if monster:
             monster_regex = re.compile(r"battle (?:the )?(.*?) in")
-            map_regex = re.compile(r"in (?:the ) /(.*?) map")
-            items_regex = re.compile(r"to (?:get|unlock) (.*?)(?: until|\.|!)")
+            map_regex = re.compile(r"/(.*?) map")
             
             monster = re.search(monster_regex, text ).group(1) if re.search(monster_regex, text) is not None else ""
             map = re.search(map_regex, text ).group(1) if re.search(map_regex, text) is not None else ""
-            items = re.search(items_regex, text ).group(1) if re.search(items_regex, text) is not None else ""
             
             if "until" in text:
                 until_date_regex = re.compile(r"until (.*?)(?: to|\.|!)")
@@ -62,7 +59,8 @@ class events:
         pattern = r"url:\s*'([^']*)',\s*start:\s*'(\d{4}-\d{2}-\d{2})'"
 
         # get the current date in the format "Y-m-d"
-        current_date = datetime.today().strftime('%Y-%m-%d')
+        current_date = datetime.now(self.timezone).strftime('%Y-%m-%d')
+        print(current_date)
         # current_date = '2023-02-28'
 
         # loop over all matches and extract URLs with the current date
