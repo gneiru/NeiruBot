@@ -69,7 +69,7 @@ class events:
         # get the current date in the format "Y-m-d"
         current_date = datetime.now(self.timezone).strftime('%Y-%m-%d')
         print(current_date)
-        current_date = '2023-03-26'
+        # current_date = '2023-03-26'
 
         # loop over all matches and extract URLs with the current date
         matches = re.findall(pattern, date_events)
