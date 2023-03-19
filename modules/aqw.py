@@ -11,6 +11,7 @@ class events:
         self.eventList = None
         self.content = None
         self.timestamp = None
+        self.soup = None
         self.what = None
         self.boostHours = 48
         self.imgURL = "https://artix.com/media/1077/ae_mainbanner.jpg"
@@ -20,22 +21,29 @@ class events:
         now = datetime.now(self.timezone).timestamp()
         hours_in_seconds = hours * 60 * 60
         self.timestamp = int((now + hours_in_seconds))
-        
+    
     def regex(self, monster: bool = False, boost: bool = False):
-        text = self.content.lower()
+        
         if monster:
-            monster_regex = re.compile(r"battle (?:the )?(.*?) in")
-            map_regex = re.compile(r"/(.*?) map")
+            return self.content.split("Log in")[0]
+            # children = (self.soup.find('div', {'class': 'newsPost'}).findChildren())
+            # for i, child in enumerate(children, start=1):
+            #     print(f"{i}. {child}")
+            # monster = self.soup.find('span', {'class': 'css-901oao'}).find('span').text
+            # mapAndReward = self.soup.find('span', {'class': 'css-901oao'}).text.strip().replace(monster, '')
+            # getListForMap = mapAndReward.split('map')
+            # map = getListForMap[0].split("the /")[1]
+            # items = getListForMap[1].split("get")[1]
+            # match = re.search(r'\d.+?(?=(\.|Log))', items)
+            # matched_text = match.group().replace('AC', 'AC ') if match else ''
+            # items = (matched_text.strip())
+
             
-            monster = re.search(monster_regex, text ).group(1) if re.search(monster_regex, text) is not None else ""
-            map = re.search(map_regex, text ).group(1) if re.search(map_regex, text) is not None else ""
-            
-            if "until" in text:
-                until_date_regex = re.compile(r"until (.*?)(?: to|\.|!)")
-                until_date_match = re.search(until_date_regex, text).group(1)
-                return f'**Monster:** {monster.title()}\n**Map:** /join {map}\n**Item(s):** {self.what}\n**Until: ** {until_date_match.capitalize()}'
+            # if "leave" in text:
+            #     date = self.soup.select('em')[0].text.strip().split("leave ")[1].capitalize()
+            #     return f'**Monster:** {monster.title()}\n**Map:** /join {map}\n**Item(s):** {items}\n**Until: ** {date.capitalize()}'
                 
-            return f'**Monster:** {monster.title()}\n**Map:** /join {map}\n**Item(s):** {self.what}'
+            # return f'**Monster:** {monster.title()}\n**Map:** /join {map}\n**Item(s):** {items}'
         
         if boost:
             
@@ -61,7 +69,7 @@ class events:
         # get the current date in the format "Y-m-d"
         current_date = datetime.now(self.timezone).strftime('%Y-%m-%d')
         print(current_date)
-        # current_date = '2023-02-28'
+        current_date = '2023-03-26'
 
         # loop over all matches and extract URLs with the current date
         matches = re.findall(pattern, date_events)
@@ -73,6 +81,7 @@ class events:
     async def process_url(self, url):
         response = requests.get(url)
         soup = bts(response.text, "html.parser")
+        self.soup = soup
         div = soup.select_one('div.newsPost')
         self.what = div.select_one('h1').text
         self.content = div.text
@@ -172,11 +181,11 @@ class account:
         return [item["strName"] for item in soupID if item["strType"] == "Class"]
 
 async def doStuffs():
-    c = events()
-    urls = await c.get_urls()
+    ev = events()
+    urls = await ev.get_urls()
     for url in urls:
-        processed = await c.process_url(url)
-        print(processed)
+        dicx = await ev.process_url(url)
+        print(dicx)
 
 if __name__ == "__main__":
     asyncio.run(doStuffs())
